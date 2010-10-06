@@ -57,5 +57,5 @@ LINES = """19883   <code object _optimize_charset, file '/home/fijal/src/pypy-tr
 1956214 <code object <genexp>, file '/home/fijal/src/pypy-benchmarks/unladen_swallow/performance/bm_ai.py', line 46> #9 STORE_FAST
 """.split("\n")
 
-def test_parse_log_count():
-    parse_log_counts(LINES)
+#def test_parse_log_count():
+#    parse_log_counts(LINES)
