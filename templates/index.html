@@ -1,0 +1,20 @@
+<html>
+<head>
+  <link rel="stylesheet" type="text/css" href="/static/style.css"/>
+  <link rel="stylesheet" type="text/css" href="/static/pygments.css"/>
+  <script src="/static/jquery.min.js"></script>
+  <script src="/static/script.js"></script>
+</head>
+<body>
+  <div id="loops">
+    <ul>
+      {% for item in loops %}
+      <li><a href="loop?no={{loop.index}}">{{item.repr()}}</a></li>
+      {% endfor %}
+    </ul>
+  </div>
+  <div id="main">
+     Main
+  </div>
+</body>
+</html>
