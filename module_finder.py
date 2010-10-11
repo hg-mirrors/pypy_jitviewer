@@ -1,35 +1,34 @@
 
-import os, sys
+import os, sys, marshal, types, ast
 
-class NotFound(Exception):
-    """ An exception raised when module was not found in sys.path
-    """
+def _all_codes_from(code):
+    res = {}
+    more = [code]
+    while more:
+        next = more.pop()
+        res[next.co_firstlineno] = next
+        more += [co for co in next.co_consts
+                 if isinstance(co, types.CodeType)]
+    return res
 
-def find_module(name, sys_path=sys.path):
-    """ Searches sys.path for possible parent paths for name (which is
-    a filesystem name). Returns a pair (entry in sys.path, name of module)
-    where name of module is a reasonable name to be passed as argument for
-    __import__
-    """
-    sys_path_dict = {}
-    for path in sys_path:
-        sys_path_dict[path] = None
-    bases = name.split(os.path.sep)
-    for i in range(len(bases) - 1, -1, -1):
-        prefix = os.path.sep.join(bases[:i])
-        if prefix in sys_path_dict:
-            modname = ".".join(bases[i:])
-            if modname.endswith('.pyc'):
-                modname = modname[:-4]
-            else:
-                assert modname.endswith(".py")
-                modname = modname[:-3]
-            return prefix, modname
-    raise NotFound
 
-def import_module(name):
-    """ Finds a module based on it's name. Looks for all paths above if they're
-    on sys.path. if so, loads the parent sys.path and then module. Might
-    not be 100% proof, but should work in most cases
+def gather_all_code_objs(fname):
+    """ Gathers all code objects from a give fname and sorts them by
+    starting lineno
     """
-    sys_path_entry, modname = find_module(name)
+    fname = str(fname)
+    if fname.endswith('.pyc'):
+        code = marshal.loads(open(fname).read()[8:])
+        assert isinstance(code, types.CodeType)
+    elif fname.endswith('.py'):
+        code = compile(ast.parse(open(fname).read()), fname, 'exec')
+    else:
+        raise Exception("Unknown file extension: %s" % fname)
+    return _all_codes_from(code)
+
+def load_code(fname, name, lineno):
+    """ Loads a module code from a given description. If fname is a pyc file,
+    just unmarshal it and find correct code, otherwise use ast module to
+    get code. Insane hack, but works
+    """
+    return gather_all_code_objs(fname)[lineno]

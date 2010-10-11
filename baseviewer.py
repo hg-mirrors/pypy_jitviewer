@@ -4,6 +4,7 @@ import flask
 from pypy.tool.logparser import parse_log_file, extract_category
 from pypy.jit.metainterp.test.oparser import parse
 from pypy.jit.metainterp.resoperation import rop
+from module_finder import load_code
 
 from pygments import highlight
 from pygments.lexers import PythonLexer
@@ -77,11 +78,14 @@ class Server(object):
 
     def loop(self):
         no = int(flask.request.args.get('no', '0'))
+        # gather all functions
         loop = self.loops[no]
         startline = loop.lineno - 1
+        import pdb
+        pdb.set_trace()
         code = highlight(open(loop.filename).read(),
-                         PythonLexer(), HtmlFormatter(linenos='table',
-                                                      lineanchors='line'))
+                         PythonLexer(), HtmlFormatter(lineanchors='line'))
+        #mod = import_module
         return flask.render_template('loop.html', code=code,
                                      startline=startline)
 
