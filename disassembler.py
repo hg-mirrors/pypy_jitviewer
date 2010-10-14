@@ -6,6 +6,7 @@ view on things
 
 import sys
 import types
+import inspect
 
 from opcode import *
 from opcode import __all__ as _opcodes_all
@@ -29,11 +30,12 @@ class Opcode(object):
 class CodeRepresentation(object):
     """ Representation of opcodes
     """
-    def __init__(self, opcodes):
+    def __init__(self, opcodes, source):
         self.opcodes = opcodes
         self.map = {}
         for opcode in opcodes:
             self.map[opcode.pos] = opcode
+        self.source = source.split("\n")
 
 def _setup():
     for opcode in opname:
@@ -97,6 +99,7 @@ def distb(tb=None):
 
 def disassemble(co, lasti=-1):
     """Disassemble a code object."""
+    source = inspect.getsource(co)
     code = co.co_code
     labels = findlabels(code)
     linestarts = dict(findlinestarts(co))
@@ -155,8 +158,8 @@ def disassemble(co, lasti=-1):
             #     print '(' + free[oparg] + ')',
         else:
             oparg = None
-        res.append(globals()[opname[op]](pos, lastline, oparg))
-    return CodeRepresentation(res)
+        res.append(globals()[opname[op].replace('+', '_')](pos, lastline, oparg))
+    return CodeRepresentation(res, source)
 
 def disassemble_string(code, lasti=-1, varnames=None, names=None,
                        constants=None):

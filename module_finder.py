@@ -1,5 +1,5 @@
 
-import os, sys, marshal, types, ast
+import os, sys, marshal, types
 
 def _all_codes_from(code):
     res = {}
@@ -21,8 +21,10 @@ def gather_all_code_objs(fname):
         code = marshal.loads(open(fname).read()[8:])
         assert isinstance(code, types.CodeType)
     elif fname.endswith('.py'):
-        code = compile(ast.parse(open(fname).read()), fname, 'exec')
+        code = compile(open(fname).read(), fname, 'exec')
     else:
+        import pdb
+        pdb.set_trace()
         raise Exception("Unknown file extension: %s" % fname)
     return _all_codes_from(code)
 
