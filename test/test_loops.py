@@ -1,6 +1,7 @@
 
 from pypy.jit.metainterp.test.oparser import parse
-from baseviewer import slice_debug_merge_points, parse_log_counts
+from loops import slice_debug_merge_points, parse_log_counts
+import py
 
 def test_split():
     ops = parse('''
@@ -16,6 +17,7 @@ def test_split():
     assert len(res.chunks[0].operations) == 1
     assert len(res.chunks[1].operations) == 2
     assert len(res.chunks[2].operations) == 2
+    assert res.chunks[2].bytecode_no == 11
     
 def test_name():
     ops = parse('''
@@ -29,7 +31,7 @@ def test_name():
     res = slice_debug_merge_points(ops)
     assert res.repr() == res.chunks[0].repr()
     assert res.repr() == "stuff, file '/tmp/x.py', line 200"
-    assert res.lineno == 200
+    assert res.startlineno == 200
     assert res.filename == '/tmp/x.py'
     assert res.name == 'stuff'
 
@@ -59,3 +61,15 @@ LINES = """19883   <code object _optimize_charset, file '/home/fijal/src/pypy-tr
 
 #def test_parse_log_count():
 #    parse_log_counts(LINES)
+
+def test_lineno():
+    fname = str(py.path.local(__file__).join('..', 'x.py'))
+    ops = parse('''
+    [i0, i1]
+    debug_merge_point("<code object f, file '%(fname)s', line 2> #0 LOAD_FAST")
+    debug_merge_point("<code object f, file '%(fname)s', line 2> #3 LOAD_FAST")
+    debug_merge_point("<code object f, file '%(fname)s', line 2> #6 BINARY_ADD")
+    debug_merge_point("<code object f, file '%(fname)s', line 2> #7 RETURN_VALUE")
+    ''' % locals())
+    res = slice_debug_merge_points(ops)
+    assert res.chunks[1].lineno == 3

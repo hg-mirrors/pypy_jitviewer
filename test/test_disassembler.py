@@ -14,3 +14,4 @@ def test_disassembler():
         'LOAD_FAST', 'LOAD_FAST', 'BINARY_ADD', 'RETURN_VALUE']
     for i in range(4):
         assert res.opcodes[i].lineno == f.func_code.co_firstlineno + 1
+    

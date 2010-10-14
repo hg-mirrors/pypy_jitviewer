@@ -23,7 +23,7 @@ class Opcode(object):
 
     def __repr__(self):
         if self.arg is None:
-            return "<%s at %d>" (self.__class__.__name__, self.pos)
+            return "<%s at %d>" % (self.__class__.__name__, self.pos)
         return "<%s (%s) at %d>" % (self.__class__.__name__, self.arg, self.pos)
 
 class CodeRepresentation(object):
