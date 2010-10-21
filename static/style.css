@@ -1,11 +1,43 @@
+
 #single_loop {
-  float: right;
+    float: right;
 }
 
 #loops {
 }
 
 #main {
-  float: left;
-  width: 50%;
+    float: left;
+    width: 50%;
+}
+
+.source {
+    white-space: pre;
+    font-size: 15px;
+}
+
+.hidden {
+    color: #aaa;
+}
+
+.visible {
+    color: #0f0;
+}
+
+.operations {
+    display: block;
+    border: 1px solid #CACACA;
+    -moz-border-radius: 5px;
+	  -webkit-border-radius: 5px;
+    border-radius: 5px;
+	  -webkit-box-shadow: 0px 0px 7px #cacaca;
+    margin-left: 100px;
+    padding-bottom: 5px;
+    padding-top: 5px;
+}
+
+.single-operation {
+    font-size: 12px;
+    white-space: pre;
+    margin-left: 10px;
 }

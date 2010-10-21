@@ -7,10 +7,25 @@
   <script src="/static/script.js"></script>
   <script>
     $(document).ready(function() {
-      $.scrollTo($("[name=line-{{startline}}]"), 200);
+      $.scrollTo($("#line-{{startline}}"), 200);
     });
   </script>
 </head>
 <body>
-  {{code|safe}}
+  {% for sourceline in source.lines %}
+     {% if sourceline.in_loop %}
+         <div id="line-{{loop.index + source.firstlineno}}" class="source visible">{{sourceline.line}}</div>
+         {% if sourceline.chunks %}
+            <div class="operations">
+                {% for chunk in sourceline.chunks %}
+                   {% for op in chunk.operations[1:] %}
+                      <span class="single-operation">{{op.repr() + "\n"}}</span>
+                   {% endfor %}
+                {% endfor %}
+            </div>
+         {% endif %}
+     {% else %}
+         <div id="line-{{loop.index + source.firstlineno}}" class="source hidden">{{sourceline.line}}</div>
+     {% endif %}
+  {% endfor %}
 </body>

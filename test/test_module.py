@@ -23,3 +23,6 @@ def test_load_code():
     assert code.co_name == 'sub'
     assert code.co_filename == '/usr/lib/python2.6/re.py'
     assert code.co_firstlineno == 144
+
+def test_ast():
+    pass

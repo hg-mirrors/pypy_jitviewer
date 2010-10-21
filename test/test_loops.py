@@ -48,16 +48,6 @@ def test_name_no_first():
     res = slice_debug_merge_points(ops)
     assert res.repr() == res.chunks[1].repr()
 
-LINES = """19883   <code object _optimize_charset, file '/home/fijal/src/pypy-trunk/lib-python/modified-2.5.2/sre_compile.py', line 214> #290 FOR_ITER
-645     <code object _optimize_charset, file '/home/fijal/src/pypy-trunk/lib-python/modified-2.5.2/sre_compile.py', line 214> #290 FOR_ITER
-3810    <code object _mk_bitmap, file '/home/fijal/src/pypy-trunk/lib-python/modified-2.5.2/sre_compile.py', line 265> #66 FOR_ITER
-334     <code object _mk_bitmap, file '/home/fijal/src/pypy-trunk/lib-python/modified-2.5.2/sre_compile.py', line 265> #66 FOR_ITER
-5       <code object _optimize_charset, file '/home/fijal/src/pypy-trunk/lib-python/modified-2.5.2/sre_compile.py', line 214> #346 POP_TOP
-2256920 <code object <genexp>, file '/home/fijal/src/pypy-benchmarks/unladen_swallow/performance/bm_ai.py', line 67> #24 POP_TOP
-2256864 <code object <genexp>, file '/home/fijal/src/pypy-benchmarks/unladen_swallow/performance/bm_ai.py', line 46> #20 POP_TOP
-1955880 <code object <genexp>, file '/home/fijal/src/pypy-benchmarks/unladen_swallow/performance/bm_ai.py', line 67> #9 STORE_FAST
-1956214 <code object <genexp>, file '/home/fijal/src/pypy-benchmarks/unladen_swallow/performance/bm_ai.py', line 46> #9 STORE_FAST
-""".split("\n")
 
 #def test_parse_log_count():
 #    parse_log_counts(LINES)
@@ -73,3 +63,15 @@ def test_lineno():
     ''' % locals())
     res = slice_debug_merge_points(ops)
     assert res.chunks[1].lineno == 3
+
+def test_linerange():
+    fname = str(py.path.local(__file__).join('..', 'x.py'))
+    ops = parse('''
+    [i0, i1]
+    debug_merge_point("<code object f, file '%(fname)s', line 5> #9 LOAD_FAST")
+    debug_merge_point("<code object f, file '%(fname)s', line 5> #12 LOAD_CONST")
+    debug_merge_point("<code object f, file '%(fname)s', line 5> #22 LOAD_CONST")
+    debug_merge_point("<code object f, file '%(fname)s', line 5> #6 SETUP_LOOP")
+    ''' % locals())
+    res = slice_debug_merge_points(ops)
+    assert res.linerange == (7, 8)

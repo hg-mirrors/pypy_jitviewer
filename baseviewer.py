@@ -1,9 +1,12 @@
 
+import cgi
 import flask
+import inspect
 from pypy.tool.logparser import parse_log_file, extract_category
 from pypy.jit.metainterp.test.oparser import parse
 from module_finder import load_code
 from loops import slice_debug_merge_points, parse_log_counts
+from display import CodeRepr
 
 from pygments import highlight
 from pygments.lexers import PythonLexer
@@ -20,15 +23,13 @@ class Server(object):
         no = int(flask.request.args.get('no', '0'))
         # gather all functions
         loop = self.loops[no]
-        startline = loop.lineno - 1
-        import pdb
-        pdb.set_trace()
-        code = highlight(open(loop.filename).read(),
-                         PythonLexer(), HtmlFormatter(lineanchors='line'))
-        #mod = import_module
-        return flask.render_template('loop.html', code=code,
+        startline, endline = loop.linerange
+        code = load_code(loop.filename, loop.name, loop.startlineno)
+        source = inspect.getsource(code)
+        return flask.render_template('loop.html',
+                                     source=CodeRepr(source, code, loop),
                                      startline=startline)
-
+        
 def main():
     log = parse_log_file('log')
     log_counts = parse_log_counts(open('log.count').readlines())
@@ -40,7 +41,7 @@ def main():
     app.debug = True
     app.route('/')(server.index)
     app.route('/loop')(server.loop)
-    app.run()
+    app.run(use_reloader=False)
 
 if __name__ == '__main__':
     main()

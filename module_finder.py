@@ -1,5 +1,5 @@
 
-import os, sys, marshal, types
+import os, sys, marshal, types, struct, imp
 
 def _all_codes_from(code):
     res = {}
@@ -11,15 +11,22 @@ def _all_codes_from(code):
                  if isinstance(co, types.CodeType)]
     return res
 
-
 def gather_all_code_objs(fname):
     """ Gathers all code objects from a give fname and sorts them by
     starting lineno
     """
     fname = str(fname)
     if fname.endswith('.pyc'):
-        code = marshal.loads(open(fname).read()[8:])
-        assert isinstance(code, types.CodeType)
+        f = open(fname)
+        magic = f.read(4)
+        f.read(4) # timestamp
+        if magic != imp.get_magic():
+            f.close()
+            code = compile(open(fname[:-1]).read(), fname, 'exec')
+        else:
+            code = marshal.loads(f.read())
+            f.close()
+            assert isinstance(code, types.CodeType)
     elif fname.endswith('.py'):
         code = compile(open(fname).read(), fname, 'exec')
     else:

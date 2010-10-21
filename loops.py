@@ -47,6 +47,7 @@ class Loop(object):
     filename = None
     name = None
     startlineno = 0
+    _linerange = None
     
     def __init__(self, chunks):
         self.chunks = chunks
@@ -57,15 +58,25 @@ class Loop(object):
                 self.name = chunk.name
                 break
 
+    def getlinerange(self):
+        if self._linerange is None:
+            minline = sys.maxint
+            maxline = -1
+            for chunk in self.chunks:
+                if chunk.filename is not None:
+                    lineno = chunk.lineno
+                    minline = min(minline, lineno)
+                    maxline = max(maxline, lineno)
+            self._linerange = minline, maxline
+        return self._linerange
+    linerange = property(getlinerange)
+
     def repr(self):
         if self.filename is None:
             return "Unknown"
         return "%s, file '%s', line %d" % (self.name, self.filename,
                                            self.startlineno)
-
-    def key(self):
-        pass
-
+        
     def __repr__(self):
         return "[%s]" % ", ".join([repr(chunk) for chunk in self.chunks])
 
