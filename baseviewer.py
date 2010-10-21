@@ -32,7 +32,7 @@ class Server(object):
         
 def main():
     log = parse_log_file('log')
-    log_counts = parse_log_counts(open('log.count').readlines())
+    #log_counts = parse_log_counts(open('log.count').readlines())
     loops = [parse(l, no_namespace=True, nonstrict=True) for l in
              extract_category(log, "jit-log-opt-")]
     loops = [slice_debug_merge_points(loop) for loop in loops]
