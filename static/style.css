@@ -41,3 +41,22 @@
     white-space: pre;
     margin-left: 10px;
 }
+
+.inlined_call {
+    font-size: 15px;
+    color: red;
+    margin: 50px;
+    font-weight: bold;
+}
+
+.dmp {
+    font-weight: bold;
+    margin-left: 30px;
+    white-space: pre;
+    font-size: 12px;
+}
+
+.guard {
+    border: 1px solid #F00;
+    margin-left: 13px;
+}

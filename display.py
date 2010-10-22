@@ -1,5 +1,6 @@
 
 from pypy.jit.metainterp.resoperation import rop
+from loops import Bytecode
 
 class LineRepr(object):
     """ A representation of a single line
@@ -28,15 +29,14 @@ class CodeRepr(object):
 
         last_lineno = -1
         for chunk in loop.chunks:
-            no = chunk.lineno
-            if no < last_lineno:
-                no = last_lineno
+            if isinstance(chunk, Bytecode):
+                no = chunk.lineno
+                if no < last_lineno:
+                    no = last_lineno
+                else:
+                    last_lineno = no
             else:
-                last_lineno = no
-            # only non-trivial chunks please
-            if (len(chunk.operations) > 1 or
-                (len(chunk.operations) > 0 and
-                 chunk.operations[0].getopnum() != rop.DEBUG_MERGE_POINT)):
-                self.lines[no - self.firstlineno].chunks.append(chunk)
+                no = last_lineno
+            self.lines[no - self.firstlineno].chunks.append(chunk)
     
         

@@ -27,5 +27,5 @@ def test_code_repr():
     assert len(repr.lines) == 3
     assert repr.lines[1].in_loop
     assert not repr.lines[0].in_loop
-    assert repr.lines[0].chunks == []
+    assert repr.lines[0].chunks == [loop.chunks[0]]
     assert repr.lines[1].chunks == [loop.chunks[1], loop.chunks[2]]

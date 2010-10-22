@@ -30,8 +30,6 @@ def gather_all_code_objs(fname):
     elif fname.endswith('.py'):
         code = compile(open(fname).read(), fname, 'exec')
     else:
-        import pdb
-        pdb.set_trace()
         raise Exception("Unknown file extension: %s" % fname)
     return _all_codes_from(code)
 
